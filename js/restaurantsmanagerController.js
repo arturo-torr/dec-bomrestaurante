@@ -305,19 +305,6 @@ class RestaurantsManagerController {
     this[VIEW].bindRestaurantListInMenu(this.handleRestaurantsMenuList);
   };
 
-  // Manejador para el mostrado de platos
-  handleShowDish = (name) => {
-    try {
-      const dish = this[MODEL].createDish(name, RestaurantsManager.Dish);
-      this[VIEW].showDish(dish);
-    } catch (error) {
-      this[VIEW].showDish(
-        null,
-        "No existe este plato actualmente en la página."
-      );
-    }
-  };
-
   // Manejador para mostrar fichas de los platos aleatorios
   handleDishesRandomList = (name) => {
     const dish = this[MODEL].createDish(name, RestaurantsManager.Dish);
@@ -364,6 +351,32 @@ class RestaurantsManagerController {
       RestaurantsManager.Restaurant
     );
     this[VIEW].showRestaurant(rest);
+  };
+
+  // Manejador para el mostrado de platos
+  handleShowDish = (name) => {
+    try {
+      const dish = this[MODEL].createDish(name, RestaurantsManager.Dish);
+      this[VIEW].showDish(dish);
+      this[VIEW].bindShowProductInNewWindow(this.handleShowDishInNewWindow);
+    } catch (error) {
+      this[VIEW].showDish(
+        null,
+        "No existe este plato actualmente en la página."
+      );
+    }
+  };
+
+  handleShowDishInNewWindow = (name) => {
+    try {
+      const dish = this[MODEL].createDish(name, RestaurantsManager.Dish);
+      this[VIEW].showDishInNewWindow(dish);
+    } catch (error) {
+      this[VIEW].showDishInNewWindow(
+        null,
+        "No existe este producto en la página."
+      );
+    }
   };
 }
 

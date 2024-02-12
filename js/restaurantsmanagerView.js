@@ -6,6 +6,7 @@ class RestaurantsManagerView {
     this.initzone = document.getElementById("init_zone");
     this.centralzone = document.getElementById("central_zone");
     this.menu = document.querySelector(".navbar");
+    this.dishWindow = null;
   }
 
   // Recibe la función manejadora del Controller, los argumentos en un array,
@@ -40,7 +41,7 @@ class RestaurantsManagerView {
       );
     });
     document.getElementById("logo").addEventListener("click", (event) => {
-      this[EXCECUTE_HANDLER](
+      this[EXECUTE_HANDLER](
         handler,
         [],
         "body",
@@ -540,7 +541,6 @@ class RestaurantsManagerView {
   // Función que permite mostrar una tarjeta personalizada con la información de cada plato
   showDish(dish, message) {
     this.centralzone.replaceChildren();
-
     // Crea el contenedor y le añade las clases
     const container = document.createElement("div");
     container.classList.add("container", "my-5");
@@ -561,14 +561,20 @@ class RestaurantsManagerView {
                 <div class="col-xl-6 text-center">
                   <div class="p-4">
                     <div class="mt-4 mb-3">
-                      <h2 class="text-uppercase text--green fw-bold fst-italic">${dish.name}</h2>
+                      <h2 class="text-uppercase text--green fw-bold fst-italic">
+                        ${dish.name}
+                      </h2>
                     </div>
                     <div class="mt-4 mb-3">
-                      <h6 class="text-uppercase text--green fw-bold">Ingredientes</h6>
+                      <h6 class="text-uppercase text--green fw-bold">
+                        Ingredientes
+                      </h6>
                       <p class="text--green">${dish.stringIngredients}</p>
                     </div>
                     <div class="mt-5">
-                      <h6 class="text-uppercase text--green fw-bold">Descripción</h6>
+                      <h6 class="text-uppercase text--green fw-bold">
+                        Descripción
+                      </h6>
                       <p class="text--green">${dish.description}</p>
                     </div>
                     <div class="cart mt-4 align-items-center">
@@ -577,6 +583,12 @@ class RestaurantsManagerView {
                         class="newfood__content__button text-uppercase mr-2 px-4"
                       >
                         Descubrir ahora
+                      </button>
+               <button id="b-open"
+                        data-dish="${dish.name}"
+                        class="newfood__content__button text-uppercase mr-2 px-4"
+                      >
+                        Abrir en nueva ventana
                       </button>
                     </div>
                   </div>
@@ -594,6 +606,88 @@ class RestaurantsManagerView {
       );
     }
     this.centralzone.append(container);
+  }
+
+  showDishInNewWindow(dish, message) {
+    const main = this.dishWindow.document.querySelector("main");
+    const header = this.dishWindow.document.querySelector("header");
+    main.replaceChildren();
+    header.replaceChildren();
+    let container;
+    console.log(dish);
+    if (dish) {
+      this.dishWindow.document.title = `${dish.name} - ${dish.description}`;
+      header.insertAdjacentHTML(
+        "beforeend",
+        `<h1 data-name="${dish.name}" class="display-5">${dish.name} - ${dish.description}</h1>`
+      );
+      container = document.createElement("div");
+      container.id = "single-dish";
+      container.classList.add("container", "mt-5", "mb-5");
+      container.insertAdjacentHTML(
+        "beforeend",
+        `<div class="row d-flex justify-content-center">
+					<div class="col-md-10">
+						<div class="card">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="images p-3">
+										<div class="text-center p-4 img-fluid"> <img id="main-image" src="${dish.image}"/> </div>
+									</div>
+								</div>
+								<div class="col-md-12">
+									<div class="product p-4">
+										<div class="mt-4 mb-3"> <span class="text-uppercase text-muted brand">${dish.description}</span>
+											<h5 class="text-uppercase">Ingredientes</h5>
+											
+										</div>
+										<p class="about">${dish.stringIngredients}</p>
+										<div class="sizes mt-5">
+											<h6 class="text-uppercase">Características</h6>
+										</div>
+										<div class="cart mt-4 align-items-center"> <button data-serial="${dish.name}" class="btn btn-primary text-uppercase mr-2 px-4">Comprar</button> </div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>`
+      );
+      container.insertAdjacentHTML(
+        "beforeend",
+        '<button class="btn btn-primary text-uppercase m-2 px-4" onClick="window.close()">Cerrar</button>'
+      );
+    } else {
+      container = document.createElement("div");
+      container.classList.add("container");
+      container.classList.add("mt-5");
+      container.classList.add("mb-5");
+      container.insertAdjacentHTML(
+        "beforeend",
+        `<div class="row d-flex justify-content-center">${message}</div>`
+      );
+    }
+    main.append(container);
+    this.dishWindow.document.body.scrollIntoView();
+  }
+
+  bindShowProductInNewWindow(handler) {
+    const bOpen = document.getElementById("b-open");
+    bOpen.addEventListener("click", (event) => {
+      if (!this.dishWindow || this.dishWindow.closed) {
+        this.dishWindow = window.open(
+          "dish.html",
+          "DishWindow",
+          "width=800, height=600, top=250, left=250, titlebar=yes, toolbar=no,menubar=no, location=no"
+        );
+        this.dishWindow.addEventListener("DOMContentLoaded", () => {
+          handler(event.target.dataset.dish);
+        });
+      } else {
+        handler(event.target.dataset.dish);
+        this.dishWindow.focus();
+      }
+    });
   }
 }
 
