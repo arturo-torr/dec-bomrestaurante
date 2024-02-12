@@ -12,6 +12,8 @@ const historyActions = {
     RestaurantManagerApp.handleDishesCategoryList(event.state.category),
   dishesAllergenList: (event) =>
     RestaurantManagerApp.handleDishesAllergenList(event.state.allergen),
+  dishesMenuList: (event) =>
+    RestaurantManagerApp.handleDishesMenuList(event.state.menu),
 };
 
 // Se define 'popstate' para restaurar el estado de la página en función del

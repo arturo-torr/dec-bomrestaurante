@@ -374,7 +374,15 @@ class RestaurantsManagerView {
     // Los recorre y añade el manejador para aquellos que tienen el atributo menú
     for (const link of links) {
       link.addEventListener("click", (event) => {
-        handler(event.currentTarget.dataset.menu);
+        const { menu } = event.currentTarget.dataset;
+        this[EXECUTE_HANDLER](
+          handler,
+          [menu],
+          "#dish-list",
+          { action: "dishesMenuList", menu },
+          "#dish-list",
+          event
+        );
       });
     }
   }
