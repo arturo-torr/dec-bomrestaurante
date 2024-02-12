@@ -1,3 +1,6 @@
+// Symbol dónde se introducirá la vista de RestaurantManager
+const EXCECUTE_HANDLER = Symbol("excecuteHandler");
+
 class RestaurantsManagerView {
   constructor() {
     this.initzone = document.getElementById("init_zone");
@@ -5,12 +8,46 @@ class RestaurantsManagerView {
     this.menu = document.querySelector(".navbar");
   }
 
+  // Recibe la función manejadora del Controller, los argumentos en un array,
+  // la cadena que permite seleccionar el objeto contenedor de la Vista, el objeto
+  // con los datos de restauración del estado, la url y el objeto de evento
+  // para poder cancelar la acción por defecto
+  [EXCECUTE_HANDLER](
+    handler,
+    handlerArguments,
+    scrollElement,
+    data,
+    url,
+    event
+  ) {
+    handler(...handlerArguments);
+    const scroll = document.querySelector(scrollElement);
+    if (scroll) scroll.scrollIntoView();
+    history.pushState(data, null, url);
+    event.preventDefault();
+  }
+
+  // Modifiado el método para poder invocar a [EXECUTE_HANDLER]()
   bindInit(handler) {
     document.getElementById("init").addEventListener("click", (event) => {
-      handler();
+      this[EXCECUTE_HANDLER](
+        handler,
+        [],
+        "body",
+        { action: "init" },
+        "#",
+        event
+      );
     });
     document.getElementById("logo").addEventListener("click", (event) => {
-      handler();
+      this[EXCECUTE_HANDLER](
+        handler,
+        [],
+        "body",
+        { action: "init" },
+        "#",
+        event
+      );
     });
   }
 
