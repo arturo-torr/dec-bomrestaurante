@@ -73,7 +73,7 @@ class RestaurantsManagerView {
           <a
             class="text--green"
             data-dish="${dish.dish.name}"
-            href="#single-dish">
+            href="#e">
             <div>
               <img
                 alt="${dish.dish.title}"
@@ -97,15 +97,13 @@ class RestaurantsManagerView {
     // Obtiene el elemento y aquellos que dentro se compongan con el tag <a>
     const randomList = document.getElementById("random-list");
     const links = randomList.querySelectorAll("a");
-    // Los recorre y recupera el nombre del plato con el atributo personalizado dataset.name
     for (const link of links) {
       link.addEventListener("click", (event) => {
         const { dish } = event.currentTarget.dataset;
-        console.log(dish);
         this[EXECUTE_HANDLER](
           handler,
           [dish],
-          "#single-dish",
+          "#random-list",
           { action: "dishesRandomList", dish },
           "#single-dish",
           event
@@ -120,15 +118,39 @@ class RestaurantsManagerView {
     const dishList = document.getElementById("dish-list");
     const links = dishList.querySelectorAll("a.text--green");
     for (const link of links) {
+      // link.addEventListener("click", (event) => {
+      //   handler(event.currentTarget.dataset.name);
+      // });
       link.addEventListener("click", (event) => {
-        handler(event.currentTarget.dataset.name);
+        const { dish } = event.currentTarget.dataset;
+        this[EXECUTE_HANDLER](
+          handler,
+          [dish],
+          "#single-dish",
+          { action: "showDish", dish },
+          "#single-dish",
+          event
+        );
       });
     }
+
     // También recoge las imágenes
     const images = dishList.querySelectorAll("figcaption a");
     for (const image of images) {
+      // link.addEventListener("click", (event) => {
+      //   handler(event.currentTarget.dataset.name);
+      // });
       image.addEventListener("click", (event) => {
-        handler(event.currentTarget.dataset.name);
+        const { dish } = event.currentTarget.dataset;
+        console.log(dish);
+        this[EXECUTE_HANDLER](
+          handler,
+          [dish],
+          "#single-dish",
+          { action: "showDish", dish },
+          "#single-dish",
+          event
+        );
       });
     }
   }
@@ -214,7 +236,15 @@ class RestaurantsManagerView {
     // Los recorre y recupera el nombre de la categoría con el atributo personalizado dataset.category
     for (const link of links) {
       link.addEventListener("click", (event) => {
-        handler(event.currentTarget.dataset.category);
+        const { category } = event.currentTarget.dataset;
+        this[EXECUTE_HANDLER](
+          handler,
+          [category],
+          "#product-list",
+          { action: "dishesCategoryList", category },
+          "#dish-list",
+          event
+        );
       });
     }
   }
@@ -465,7 +495,7 @@ class RestaurantsManagerView {
       div.insertAdjacentHTML(
         "beforeend",
         `<figure class="card bg__black">
-            <a data-name="${dish.dish.name}" href="#single-dish" class="text--green text-center">
+            <a data-dish="${dish.dish.name}" href="#single-dish" class="text--green text-center">
               <img class="img-fluid" src="${dish.dish.image}">
               <figcaption class="my-3">${dish.dish.name}</figcaption>
             </a>
@@ -518,7 +548,7 @@ class RestaurantsManagerView {
                     </div>
                     <div class="cart mt-4 align-items-center">
                       <button
-                        data-name="${dish.name}"
+                        data-dish="${dish.name}"
                         class="newfood__content__button text-uppercase mr-2 px-4"
                       >
                         Descubrir ahora
