@@ -1,5 +1,5 @@
 // Symbol dónde se introducirá la vista de RestaurantManager
-const EXCECUTE_HANDLER = Symbol("excecuteHandler");
+const EXECUTE_HANDLER = Symbol("executeHandler");
 
 class RestaurantsManagerView {
   constructor() {
@@ -12,7 +12,7 @@ class RestaurantsManagerView {
   // la cadena que permite seleccionar el objeto contenedor de la Vista, el objeto
   // con los datos de restauración del estado, la url y el objeto de evento
   // para poder cancelar la acción por defecto
-  [EXCECUTE_HANDLER](
+  [EXECUTE_HANDLER](
     handler,
     handlerArguments,
     scrollElement,
@@ -30,7 +30,7 @@ class RestaurantsManagerView {
   // Modifiado el método para poder invocar a [EXECUTE_HANDLER]()
   bindInit(handler) {
     document.getElementById("init").addEventListener("click", (event) => {
-      this[EXCECUTE_HANDLER](
+      this[EXECUTE_HANDLER](
         handler,
         [],
         "body",
@@ -72,7 +72,7 @@ class RestaurantsManagerView {
         `<div class="col-sm-4 col-lg-4 col-md-4 col-xl-4 my-1">
           <a
             class="text--green"
-            data-name="${dish.dish.name}"
+            data-dish="${dish.dish.name}"
             href="#single-dish">
             <div>
               <img
@@ -100,7 +100,16 @@ class RestaurantsManagerView {
     // Los recorre y recupera el nombre del plato con el atributo personalizado dataset.name
     for (const link of links) {
       link.addEventListener("click", (event) => {
-        handler(event.currentTarget.dataset.name);
+        const { dish } = event.currentTarget.dataset;
+        console.log(dish);
+        this[EXECUTE_HANDLER](
+          handler,
+          [dish],
+          "#single-dish",
+          { action: "dishesRandomList", dish },
+          "#single-dish",
+          event
+        );
       });
     }
   }
