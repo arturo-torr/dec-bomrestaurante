@@ -10,6 +10,8 @@ const historyActions = {
   showProduct: (event) => RestaurantManagerApp.handleShowDish(event.state.dish),
   dishesCategoryList: (event) =>
     RestaurantManagerApp.handleDishesCategoryList(event.state.category),
+  dishesAllergenList: (event) =>
+    RestaurantManagerApp.handleDishesAllergenList(event.state.allergen),
 };
 
 // Se define 'popstate' para restaurar el estado de la página en función del

@@ -73,7 +73,7 @@ class RestaurantsManagerView {
           <a
             class="text--green"
             data-dish="${dish.dish.name}"
-            href="#e">
+            href="#single-dish">
             <div>
               <img
                 alt="${dish.dish.title}"
@@ -103,7 +103,7 @@ class RestaurantsManagerView {
         this[EXECUTE_HANDLER](
           handler,
           [dish],
-          "#random-list",
+          "#single-dish",
           { action: "dishesRandomList", dish },
           "#single-dish",
           event
@@ -118,9 +118,6 @@ class RestaurantsManagerView {
     const dishList = document.getElementById("dish-list");
     const links = dishList.querySelectorAll("a.text--green");
     for (const link of links) {
-      // link.addEventListener("click", (event) => {
-      //   handler(event.currentTarget.dataset.name);
-      // });
       link.addEventListener("click", (event) => {
         const { dish } = event.currentTarget.dataset;
         this[EXECUTE_HANDLER](
@@ -137,12 +134,8 @@ class RestaurantsManagerView {
     // También recoge las imágenes
     const images = dishList.querySelectorAll("figcaption a");
     for (const image of images) {
-      // link.addEventListener("click", (event) => {
-      //   handler(event.currentTarget.dataset.name);
-      // });
       image.addEventListener("click", (event) => {
         const { dish } = event.currentTarget.dataset;
-        console.log(dish);
         this[EXECUTE_HANDLER](
           handler,
           [dish],
@@ -196,14 +189,14 @@ class RestaurantsManagerView {
     div.insertAdjacentHTML(
       "beforeend",
       `<a
-        class="nav-link dropdown-toggle"
-        href="#"
-        id="navCats"
-        role="button"
-        data-bs-toggle="dropdown"
-        aria-expanded="false">
-        Categorías
-      </a>`
+          class="nav-link dropdown-toggle"
+          href="#dish-list"
+          id="navCats"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false">
+          Categorías
+        </a>`
     );
 
     // Crea un div y le asigna el formato que será el desplegable
@@ -214,13 +207,13 @@ class RestaurantsManagerView {
       container.insertAdjacentHTML(
         "beforeend",
         `
-          <a
-            data-category="${category.category.name}"
-            class="dropdown-item"
-            href="#dish-list"
-          >
-            ${category.category.name}
-          </a>`
+            <a
+              data-category="${category.category.name}"
+              class="dropdown-item"
+              href="#dish-list"
+            >
+              ${category.category.name}
+            </a>`
       );
     }
     div.append(container);
@@ -240,7 +233,7 @@ class RestaurantsManagerView {
         this[EXECUTE_HANDLER](
           handler,
           [category],
-          "#product-list",
+          "#dish-list",
           { action: "dishesCategoryList", category },
           "#dish-list",
           event
@@ -261,7 +254,7 @@ class RestaurantsManagerView {
         this[EXECUTE_HANDLER](
           handler,
           [category],
-          "#product-list",
+          "#dish-list",
           { action: "dishesCategoryList", category },
           "#dish-list",
           event
@@ -319,7 +312,15 @@ class RestaurantsManagerView {
     // Los recorre y añade el manejador para aquellos que tienen el atributo allergen
     for (const link of links) {
       link.addEventListener("click", (event) => {
-        handler(event.currentTarget.dataset.allergen);
+        const { allergen } = event.currentTarget.dataset;
+        this[EXECUTE_HANDLER](
+          handler,
+          [allergen],
+          "#dish-list",
+          { action: "dishesAllergenList", allergen },
+          "#dish-list",
+          event
+        );
       });
     }
   }
