@@ -257,7 +257,15 @@ class RestaurantsManagerView {
     // Los recorre y recupera el nombre de la categoría con el atributo personalizado dataset.category
     for (const link of links) {
       link.addEventListener("click", (event) => {
-        handler(event.currentTarget.dataset.category);
+        const { category } = event.currentTarget.dataset;
+        this[EXECUTE_HANDLER](
+          handler,
+          [category],
+          "#product-list",
+          { action: "dishesCategoryList", category },
+          "#dish-list",
+          event
+        );
       });
     }
   }
