@@ -436,7 +436,15 @@ class RestaurantsManagerView {
     // Los recorre y añade un manejador de eventos para aquellos con el atributo rest
     for (const link of links) {
       link.addEventListener("click", (event) => {
-        handler(event.currentTarget.dataset.rest);
+        const { rest } = event.currentTarget.dataset;
+        this[EXECUTE_HANDLER](
+          handler,
+          [rest],
+          "#restaurant",
+          { action: "restaurantList", rest },
+          "#restaurant",
+          event
+        );
       });
     }
   }
