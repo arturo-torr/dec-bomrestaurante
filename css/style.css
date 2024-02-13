@@ -19,9 +19,9 @@ header {
 }
 
 .navbar {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    align-items: center;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
     background-color: #121318;
     font-weight: 600;
     padding: 10px;

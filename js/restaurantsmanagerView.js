@@ -191,7 +191,7 @@ class RestaurantsManagerView {
     div.insertAdjacentHTML(
       "beforeend",
       `<a
-          class="nav-link dropdown-toggle"
+          class=" dropdown-toggle"
           href="#dish-list"
           id="navCats"
           role="button"
@@ -274,7 +274,7 @@ class RestaurantsManagerView {
     div.insertAdjacentHTML(
       "beforeend",
       `<a
-        class="nav-link dropdown-toggle"
+        class=" dropdown-toggle"
         href="#"
         id="navAllergens"
         role="button"
@@ -336,7 +336,7 @@ class RestaurantsManagerView {
     div.insertAdjacentHTML(
       "beforeend",
       `<a
-        class="nav-link dropdown-toggle"
+        class=" dropdown-toggle"
         href="#"
         id="navMenus"
         role="button"
@@ -398,7 +398,7 @@ class RestaurantsManagerView {
     div.insertAdjacentHTML(
       "beforeend",
       `<a
-        class="nav-link dropdown-toggle"
+        class="dropdown-toggle"
         href="#"
         id="navRests"
         role="button"
@@ -609,16 +609,24 @@ class RestaurantsManagerView {
     this.centralzone.append(container);
   }
 
+  // ------ PRÁCTICA 6 - Los métodos que se ven a continuación son de la práctica 6 ------
+
+  // Función a la que pasamos un plato y la nueva ventana para mostrarlas
   showDishInNewWindow(dish, newWindow, message) {
+    console.log(this.dishWindows);
+    // Recoge el main y el header de dish.html y los limia
     const main = newWindow.document.querySelector("main");
     const header = newWindow.document.querySelector("header");
     main.replaceChildren();
     header.replaceChildren();
+    // Formato para header
     header.classList.add("bg__grey", "p-3");
 
+    // Crea un nuevo contenedor al que se le pasarán elementos si recoge un plato
     let container;
 
     if (dish) {
+      // Formato de la nueva ventana con el plato correspondiente
       newWindow.document.title = `${dish.name} - ${dish.description}`;
       header.insertAdjacentHTML(
         "beforeend",
@@ -676,6 +684,7 @@ class RestaurantsManagerView {
         '<button class="newfood__content__button text-uppercase m-2 px-4" onClick="window.close()">Cerrar</button>'
       );
       main.append(container);
+      // Muestra mensaje de error si no se ha encontrado el plato
     } else {
       container = document.createElement("div");
       container.classList.add("container", "mt-5", "mb-5");
@@ -688,23 +697,64 @@ class RestaurantsManagerView {
     }
   }
 
+  // Función que muestra en el menú de navegación un enlace para poder cerras las ventanas abiertas
+  showCloseWindowsInMenu() {
+    // Crea un div y le asignamos formato de navegación
+    const div = document.createElement("div");
+    div.classList.add("nav-item", "navbar__menu");
+    // Le insertamos el HTML necesario
+    div.insertAdjacentHTML(
+      "beforeend",
+      `<a href="#"
+        id="b-close"
+        role="button"
+        aria-expanded="false">
+        Cerrar ventanas
+      </a>`
+    );
+    this.menu.append(div);
+  }
+
+  // Enlaza con el controlador para que cierre las ventanas de las fichas abiertas
+  bindCloseWindowsInMenu(handler) {
+    // Coge el menú para cerrar las ventanas
+    const bClose = document.getElementById("b-close");
+    // Cuando se haga click, se cierran aquellas que estén abiertas
+    bClose.addEventListener("click", () => {
+      for (const [dish, window] of this.dishWindows) {
+        // Se le pasa la ventana para que sea cerrada y el plato para que sea eliminado del mapa
+        handler(window, dish);
+      }
+    });
+  }
+
+  // Enlace que se da cuando se hace click en el botón "abrir en una ventana nueva"
   bindShowProductInNewWindow(handler) {
     const bOpen = document.getElementById("b-open");
 
+    // Siempre que se haga click, se crea una nueva ventana, a la que le asignaremos un ID
     bOpen.addEventListener("click", (event) => {
-      const newWindow = window.open(
-        "dish.html",
-        "DishWindow" + this.id++,
-        "width=800, height=600, top=250, left=250, titlebar=yes, toolbar=no, menubar=no, location=no"
-      );
+      // Si el plato ya existe, quiere decir que ya hay una ventana abierta
+      if (this.dishWindows.has(event.currentTarget.dataset.dish)) {
+        // Obtenemos la referencia y ponemos en ella el foco
+        let w = this.dishWindows.get(event.currentTarget.dataset.dish);
+        w.focus();
+      } else {
+        // Si el plato no existe, creamos la nueva ventana con un identificador único y la guardamos en el mapa
+        const newWindow = window.open(
+          "dish.html",
+          "DishWindow" + this.id++,
+          "width=800, height=600, top=250, left=250, titlebar=yes, toolbar=no, menubar=no, location=no"
+        );
+        // Guarda la referencia a la nueva ventana en el mapa
+        this.dishWindows.set(event.target.dataset.dish, newWindow);
 
-      // Guarda la referencia a la nueva ventana en el mapa
-      this.dishWindows.set(event.target.dataset.dish, newWindow);
-
-      for (const [key, value] of this.dishWindows) {
-        value.addEventListener("DOMContentLoaded", () => {
-          handler(key, value); // Pasa la referencia de la nueva ventana al controlador
-        });
+        // Recorre el mapa y pasa la referencia del plato y la nueva ventana al controlador
+        for (const [dish, window] of this.dishWindows) {
+          window.addEventListener("DOMContentLoaded", () => {
+            handler(dish, window);
+          });
+        }
       }
     });
   }

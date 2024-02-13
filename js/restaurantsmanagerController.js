@@ -267,6 +267,7 @@ class RestaurantsManagerController {
     this.onAddAllergen();
     this.onAddMenu();
     this.onAddRestaurant();
+    this.onAddClose();
   };
 
   // Funciones que se ejecutan al clickear inicio
@@ -303,6 +304,21 @@ class RestaurantsManagerController {
   onAddRestaurant = () => {
     this[VIEW].showRestaurantsInMenu(this[MODEL].restaurants);
     this[VIEW].bindRestaurantListInMenu(this.handleRestaurantsMenuList);
+  };
+
+  // ----- PRACTICA 6 -> OnAddClose & handleCloseWindowsInMenu -----
+  // Mostrado de enlace para cerrar ventanas y manejador
+  onAddClose = () => {
+    this[VIEW].showCloseWindowsInMenu();
+    this[VIEW].bindCloseWindowsInMenu(this.handleCloseWindowsInMenu);
+  };
+
+  // Manejador que permite cerrar la ventana y eliminarlo de las referencias guardadas
+  handleCloseWindowsInMenu = (window, dish) => {
+    window.close();
+    this[VIEW].dishWindows.delete(dish);
+    // Resetea los ID que se asignan a las ventanas
+    this[VIEW].id = 0;
   };
 
   // Manejador para mostrar fichas de los platos aleatorios
@@ -367,10 +383,12 @@ class RestaurantsManagerController {
     }
   };
 
+  // ----- PRACTICA 6 -----
+  // Manejador para el mostrado de platos en una nueva ventana
   handleShowDishInNewWindow = (name, newWindow) => {
     try {
       const dish = this[MODEL].createDish(name, RestaurantsManager.Dish);
-      this[VIEW].showDishInNewWindow(dish, newWindow); // Pasa la referencia de la nueva ventana al método
+      this[VIEW].showDishInNewWindow(dish, newWindow);
     } catch (error) {
       this[VIEW].showDishInNewWindow(
         null,
