@@ -6,6 +6,8 @@ class RestaurantsManagerView {
     this.initzone = document.getElementById("init_zone");
     this.centralzone = document.getElementById("central_zone");
     this.menu = document.querySelector(".navbar");
+    this.dishWindows = new Map();
+    this.id = 0;
   }
 
   // Recibe la función manejadora del Controller, los argumentos en un array,
@@ -40,7 +42,7 @@ class RestaurantsManagerView {
       );
     });
     document.getElementById("logo").addEventListener("click", (event) => {
-      this[EXCECUTE_HANDLER](
+      this[EXECUTE_HANDLER](
         handler,
         [],
         "body",
@@ -73,7 +75,7 @@ class RestaurantsManagerView {
           <a
             class="text--green"
             data-dish="${dish.dish.name}"
-            href="#e">
+            href="#single-dish">
             <div>
               <img
                 alt="${dish.dish.title}"
@@ -103,7 +105,7 @@ class RestaurantsManagerView {
         this[EXECUTE_HANDLER](
           handler,
           [dish],
-          "#random-list",
+          "#single-dish",
           { action: "dishesRandomList", dish },
           "#single-dish",
           event
@@ -118,9 +120,6 @@ class RestaurantsManagerView {
     const dishList = document.getElementById("dish-list");
     const links = dishList.querySelectorAll("a.text--green");
     for (const link of links) {
-      // link.addEventListener("click", (event) => {
-      //   handler(event.currentTarget.dataset.name);
-      // });
       link.addEventListener("click", (event) => {
         const { dish } = event.currentTarget.dataset;
         this[EXECUTE_HANDLER](
@@ -137,12 +136,8 @@ class RestaurantsManagerView {
     // También recoge las imágenes
     const images = dishList.querySelectorAll("figcaption a");
     for (const image of images) {
-      // link.addEventListener("click", (event) => {
-      //   handler(event.currentTarget.dataset.name);
-      // });
       image.addEventListener("click", (event) => {
         const { dish } = event.currentTarget.dataset;
-        console.log(dish);
         this[EXECUTE_HANDLER](
           handler,
           [dish],
@@ -196,14 +191,14 @@ class RestaurantsManagerView {
     div.insertAdjacentHTML(
       "beforeend",
       `<a
-        class="nav-link dropdown-toggle"
-        href="#"
-        id="navCats"
-        role="button"
-        data-bs-toggle="dropdown"
-        aria-expanded="false">
-        Categorías
-      </a>`
+          class=" dropdown-toggle"
+          href="#dish-list"
+          id="navCats"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false">
+          Categorías
+        </a>`
     );
 
     // Crea un div y le asigna el formato que será el desplegable
@@ -214,13 +209,13 @@ class RestaurantsManagerView {
       container.insertAdjacentHTML(
         "beforeend",
         `
-          <a
-            data-category="${category.category.name}"
-            class="dropdown-item"
-            href="#dish-list"
-          >
-            ${category.category.name}
-          </a>`
+            <a
+              data-category="${category.category.name}"
+              class="dropdown-item"
+              href="#dish-list"
+            >
+              ${category.category.name}
+            </a>`
       );
     }
     div.append(container);
@@ -240,7 +235,7 @@ class RestaurantsManagerView {
         this[EXECUTE_HANDLER](
           handler,
           [category],
-          "#product-list",
+          "#dish-list",
           { action: "dishesCategoryList", category },
           "#dish-list",
           event
@@ -261,7 +256,7 @@ class RestaurantsManagerView {
         this[EXECUTE_HANDLER](
           handler,
           [category],
-          "#product-list",
+          "#dish-list",
           { action: "dishesCategoryList", category },
           "#dish-list",
           event
@@ -279,7 +274,7 @@ class RestaurantsManagerView {
     div.insertAdjacentHTML(
       "beforeend",
       `<a
-        class="nav-link dropdown-toggle"
+        class=" dropdown-toggle"
         href="#"
         id="navAllergens"
         role="button"
@@ -319,7 +314,15 @@ class RestaurantsManagerView {
     // Los recorre y añade el manejador para aquellos que tienen el atributo allergen
     for (const link of links) {
       link.addEventListener("click", (event) => {
-        handler(event.currentTarget.dataset.allergen);
+        const { allergen } = event.currentTarget.dataset;
+        this[EXECUTE_HANDLER](
+          handler,
+          [allergen],
+          "#dish-list",
+          { action: "dishesAllergenList", allergen },
+          "#dish-list",
+          event
+        );
       });
     }
   }
@@ -333,7 +336,7 @@ class RestaurantsManagerView {
     div.insertAdjacentHTML(
       "beforeend",
       `<a
-        class="nav-link dropdown-toggle"
+        class=" dropdown-toggle"
         href="#"
         id="navMenus"
         role="button"
@@ -373,7 +376,15 @@ class RestaurantsManagerView {
     // Los recorre y añade el manejador para aquellos que tienen el atributo menú
     for (const link of links) {
       link.addEventListener("click", (event) => {
-        handler(event.currentTarget.dataset.menu);
+        const { menu } = event.currentTarget.dataset;
+        this[EXECUTE_HANDLER](
+          handler,
+          [menu],
+          "#dish-list",
+          { action: "dishesMenuList", menu },
+          "#dish-list",
+          event
+        );
       });
     }
   }
@@ -387,7 +398,7 @@ class RestaurantsManagerView {
     div.insertAdjacentHTML(
       "beforeend",
       `<a
-        class="nav-link dropdown-toggle"
+        class="dropdown-toggle"
         href="#"
         id="navRests"
         role="button"
@@ -427,7 +438,15 @@ class RestaurantsManagerView {
     // Los recorre y añade un manejador de eventos para aquellos con el atributo rest
     for (const link of links) {
       link.addEventListener("click", (event) => {
-        handler(event.currentTarget.dataset.rest);
+        const { rest } = event.currentTarget.dataset;
+        this[EXECUTE_HANDLER](
+          handler,
+          [rest],
+          "#restaurant",
+          { action: "restaurantList", rest },
+          "#restaurant",
+          event
+        );
       });
     }
   }
@@ -523,7 +542,6 @@ class RestaurantsManagerView {
   // Función que permite mostrar una tarjeta personalizada con la información de cada plato
   showDish(dish, message) {
     this.centralzone.replaceChildren();
-
     // Crea el contenedor y le añade las clases
     const container = document.createElement("div");
     container.classList.add("container", "my-5");
@@ -544,14 +562,20 @@ class RestaurantsManagerView {
                 <div class="col-xl-6 text-center">
                   <div class="p-4">
                     <div class="mt-4 mb-3">
-                      <h2 class="text-uppercase text--green fw-bold fst-italic">${dish.name}</h2>
+                      <h2 class="text-uppercase text--green fw-bold fst-italic">
+                        ${dish.name}
+                      </h2>
                     </div>
                     <div class="mt-4 mb-3">
-                      <h6 class="text-uppercase text--green fw-bold">Ingredientes</h6>
+                      <h6 class="text-uppercase text--green fw-bold">
+                        Ingredientes
+                      </h6>
                       <p class="text--green">${dish.stringIngredients}</p>
                     </div>
                     <div class="mt-5">
-                      <h6 class="text-uppercase text--green fw-bold">Descripción</h6>
+                      <h6 class="text-uppercase text--green fw-bold">
+                        Descripción
+                      </h6>
                       <p class="text--green">${dish.description}</p>
                     </div>
                     <div class="cart mt-4 align-items-center">
@@ -560,6 +584,12 @@ class RestaurantsManagerView {
                         class="newfood__content__button text-uppercase mr-2 px-4"
                       >
                         Descubrir ahora
+                      </button>
+               <button id="b-open"
+                        data-dish="${dish.name}"
+                        class="newfood__content__button text-uppercase mr-2 px-4"
+                      >
+                        Abrir en nueva ventana
                       </button>
                     </div>
                   </div>
@@ -577,6 +607,156 @@ class RestaurantsManagerView {
       );
     }
     this.centralzone.append(container);
+  }
+
+  // ------ PRÁCTICA 6 - Los métodos que se ven a continuación son de la práctica 6 ------
+
+  // Función a la que pasamos un plato y la nueva ventana para mostrarlas
+  showDishInNewWindow(dish, newWindow, message) {
+    console.log(this.dishWindows);
+    // Recoge el main y el header de dish.html y los limia
+    const main = newWindow.document.querySelector("main");
+    const header = newWindow.document.querySelector("header");
+    main.replaceChildren();
+    header.replaceChildren();
+    // Formato para header
+    header.classList.add("bg__grey", "p-3");
+
+    // Crea un nuevo contenedor al que se le pasarán elementos si recoge un plato
+    let container;
+
+    if (dish) {
+      // Formato de la nueva ventana con el plato correspondiente
+      newWindow.document.title = `${dish.name} - ${dish.description}`;
+      header.insertAdjacentHTML(
+        "beforeend",
+        `<h1 data-name="${dish.name}" class="text--green">${dish.name} - ${dish.description}</h1>`
+      );
+      container = newWindow.document.createElement("div");
+      container.id = "single-dish";
+      container.classList.add("container", "mt-5", "mb-5");
+      container.insertAdjacentHTML(
+        "beforeend",
+        `<div class="row">
+          <div class="col-12">
+            <div class="card bg__grey border--green">
+              <div class="row align-items-center">
+                <div class="col-xl-6">
+                  <div class="text-center p-4">
+                    <img class="img-fluid rounded" src="${dish.image}" />
+                  </div>
+                </div>
+                <div class="col-xl-6 text-center">
+                  <div class="p-4">
+                    <div class="mt-4 mb-3">
+                      <h2 class="text-uppercase text--green fw-bold fst-italic">
+                        ${dish.name}
+                      </h2>
+                    </div>
+                    <div class="mt-4 mb-3">
+                      <h6 class="text-uppercase text--green fw-bold">
+                        Ingredientes
+                      </h6>
+                      <p class="text--green">${dish.stringIngredients}</p>
+                    </div>
+                    <div class="mt-5">
+                      <h6 class="text-uppercase text--green fw-bold">
+                        Descripción
+                      </h6>
+                      <p class="text--green">${dish.description}</p>
+                    </div>
+                    <div class="cart mt-4 align-items-center">
+                      <button
+                        data-dish="${dish.name}"
+                        class="newfood__content__button text-uppercase mr-2 px-4"
+                      >
+                        Descubrir ahora
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`
+      );
+      container.insertAdjacentHTML(
+        "beforeend",
+        '<button class="newfood__content__button text-uppercase m-2 px-4" onClick="window.close()">Cerrar</button>'
+      );
+      main.append(container);
+      // Muestra mensaje de error si no se ha encontrado el plato
+    } else {
+      container = document.createElement("div");
+      container.classList.add("container", "mt-5", "mb-5");
+      container.classList.add("mt-5");
+      container.classList.add("mb-5");
+      container.insertAdjacentHTML(
+        "beforeend",
+        `<div class="row d-flex justify-content-center">${message}</div>`
+      );
+    }
+  }
+
+  // Función que muestra en el menú de navegación un enlace para poder cerras las ventanas abiertas
+  showCloseWindowsInMenu() {
+    // Crea un div y le asignamos formato de navegación
+    const div = document.createElement("div");
+    div.classList.add("nav-item", "navbar__menu");
+    // Le insertamos el HTML necesario
+    div.insertAdjacentHTML(
+      "beforeend",
+      `<a href="#"
+        id="b-close"
+        role="button"
+        aria-expanded="false">
+        Cerrar ventanas
+      </a>`
+    );
+    this.menu.append(div);
+  }
+
+  // Enlaza con el controlador para que cierre las ventanas de las fichas abiertas
+  bindCloseWindowsInMenu(handler) {
+    // Coge el menú para cerrar las ventanas
+    const bClose = document.getElementById("b-close");
+    // Cuando se haga click, se cierran aquellas que estén abiertas
+    bClose.addEventListener("click", () => {
+      for (const [dish, window] of this.dishWindows) {
+        // Se le pasa la ventana para que sea cerrada y el plato para que sea eliminado del mapa
+        handler(window, dish);
+      }
+    });
+  }
+
+  // Enlace que se da cuando se hace click en el botón "abrir en una ventana nueva"
+  bindShowProductInNewWindow(handler) {
+    const bOpen = document.getElementById("b-open");
+
+    // Siempre que se haga click, se crea una nueva ventana, a la que le asignaremos un ID
+    bOpen.addEventListener("click", (event) => {
+      // Si el plato ya existe, quiere decir que ya hay una ventana abierta
+      if (this.dishWindows.has(event.currentTarget.dataset.dish)) {
+        // Obtenemos la referencia y ponemos en ella el foco
+        let w = this.dishWindows.get(event.currentTarget.dataset.dish);
+        w.focus();
+      } else {
+        // Si el plato no existe, creamos la nueva ventana con un identificador único y la guardamos en el mapa
+        const newWindow = window.open(
+          "dish.html",
+          "DishWindow" + this.id++,
+          "width=800, height=600, top=250, left=250, titlebar=yes, toolbar=no, menubar=no, location=no"
+        );
+        // Guarda la referencia a la nueva ventana en el mapa
+        this.dishWindows.set(event.target.dataset.dish, newWindow);
+
+        // Recorre el mapa y pasa la referencia del plato y la nueva ventana al controlador
+        for (const [dish, window] of this.dishWindows) {
+          window.addEventListener("DOMContentLoaded", () => {
+            handler(dish, window);
+          });
+        }
+      }
+    });
   }
 }
 

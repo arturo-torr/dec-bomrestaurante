@@ -10,10 +10,15 @@ const historyActions = {
   showProduct: (event) => RestaurantManagerApp.handleShowDish(event.state.dish),
   dishesCategoryList: (event) =>
     RestaurantManagerApp.handleDishesCategoryList(event.state.category),
+  dishesAllergenList: (event) =>
+    RestaurantManagerApp.handleDishesAllergenList(event.state.allergen),
+  dishesMenuList: (event) =>
+    RestaurantManagerApp.handleDishesMenuList(event.state.menu),
+  restaurantList: (event) =>
+    RestaurantManagerApp.handleRestaurantsMenuList(event.state.rest),
 };
 
-// Se define 'popstate' para restaurar el estado de la página en función del
-// tipo de acción apilada
+// Se define 'popstate' para restaurar el estado de la página en función del tipo de acción apilada
 window.addEventListener("popstate", (event) => {
   if (event.state) {
     historyActions[event.state.action](event);
