@@ -367,10 +367,10 @@ class RestaurantsManagerController {
     }
   };
 
-  handleShowDishInNewWindow = (name) => {
+  handleShowDishInNewWindow = (name, newWindow) => {
     try {
       const dish = this[MODEL].createDish(name, RestaurantsManager.Dish);
-      this[VIEW].showDishInNewWindow(dish);
+      this[VIEW].showDishInNewWindow(dish, newWindow); // Pasa la referencia de la nueva ventana al método
     } catch (error) {
       this[VIEW].showDishInNewWindow(
         null,
